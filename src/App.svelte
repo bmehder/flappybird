@@ -36,7 +36,7 @@
     function draw() {
       ctx.drawImage(background, 0, 0)
 
-      for (var i = 0; i < pipe.length; i++) {
+      for (let i = 0; i < pipe.length; i++) {
         const yOffset = pipeNorth.height + GAP
 
         ctx.drawImage(pipeNorth, pipe[i].x, pipe[i].y)
