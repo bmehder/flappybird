@@ -1,16 +1,20 @@
 <script>
   const bird = new Image()
-  const bg = new Image()
-  const fg = new Image()
+  const background = new Image()
+  const foreground = new Image()
   const pipeNorth = new Image()
   const pipeSouth = new Image()
 
   const flyAudio = new Audio()
   const scoreAudio = new Audio()
 
+  const pipe = []
+  const GRAVITY = 1.5
+  const GAP = 85
+
   bird.src = '/images/bird.png'
-  bg.src = '/images/bg.png'
-  fg.src = '/images/fg.png'
+  background.src = '/images/bg.png'
+  foreground.src = '/images/fg.png'
   pipeNorth.src = '/images/pipeNorth.png'
   pipeSouth.src = '/images/pipeSouth.png'
 
@@ -19,11 +23,7 @@
 
   let bY = 150
   let bX = 10
-  let gap = 85
-  let constant
-  let gravity = 1.5
   let score = 0
-  var pipe = []
 
   const init = node => {
     let ctx = node.getContext('2d')
@@ -34,42 +34,42 @@
     }
 
     function draw() {
-      ctx?.drawImage(bg, 0, 0)
+      ctx.drawImage(background, 0, 0)
 
       for (var i = 0; i < pipe.length; i++) {
-        constant = pipeNorth.height + gap
-        ctx?.drawImage(pipeNorth, pipe[i].x, pipe[i].y)
-        ctx?.drawImage(pipeSouth, pipe[i].x, pipe[i].y + constant)
+        const yOffset = pipeNorth.height + GAP
+
+        ctx.drawImage(pipeNorth, pipe[i].x, pipe[i].y)
+        ctx.drawImage(pipeSouth, pipe[i].x, pipe[i].y + yOffset)
 
         pipe[i].x--
 
-        if (pipe[i].x == 125) {
+        if (pipe[i].x === 125) {
           pipe.push({
             x: node.width,
             y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height,
           })
         }
 
-        // detect collision
-        const collision =
+        const isCollision =
           (bX + bird.width >= pipe[i].x &&
             bX <= pipe[i].x + pipeNorth.width &&
-            (bY <= pipe[i].y + pipeNorth.height || bY + bird.height >= pipe[i].y + constant)) ||
-          bY + bird.height >= node.height - fg.height
+            (bY <= pipe[i].y + pipeNorth.height || bY + bird.height >= pipe[i].y + yOffset)) ||
+          bY + bird.height >= node.height - foreground.height
 
-        collision && location.reload()
+        isCollision && location.reload()
 
-        if (pipe[i].x == 5) {
+        if (pipe[i].x === 5) {
           score++
           scoreAudio.play()
         }
       }
 
-      ctx.drawImage(fg, 0, node.height - fg.height)
+      ctx.drawImage(foreground, 0, node.height - foreground.height)
 
       ctx.drawImage(bird, bX, bY)
 
-      bY += gravity
+      bY += GRAVITY
 
       ctx.fillStyle = '#000'
       ctx.font = '20px Monospace'
