@@ -1,44 +1,35 @@
 <script>
-  import { onMount } from 'svelte'
-  let cvs
+  const bird = new Image()
+  const bg = new Image()
+  const fg = new Image()
+  const pipeNorth = new Image()
+  const pipeSouth = new Image()
+
+  const flyAudio = new Audio()
+  const scoreAudio = new Audio()
+
+  bird.src = '/images/bird.png'
+  bg.src = '/images/bg.png'
+  fg.src = '/images/fg.png'
+  pipeNorth.src = '/images/pipeNorth.png'
+  pipeSouth.src = '/images/pipeSouth.png'
+
+  flyAudio.src = 'sounds/fly.mp3'
+  scoreAudio.src = 'sounds/score.mp3'
 
   let bY = 150
+  let bX = 10
+  let gap = 85
+  let constant
+  let gravity = 1.5
+  let score = 0
+  var pipe = []
 
-  const fly = new Audio()
-
-  onMount(() => {
-    let ctx = cvs?.getContext('2d')
-
-    const bird = new Image()
-    const bg = new Image()
-    const fg = new Image()
-    const pipeNorth = new Image()
-    const pipeSouth = new Image()
-
-    bird.src = '/images/bird.png'
-    bg.src = '/images/bg.png'
-    fg.src = '/images/fg.png'
-    pipeNorth.src = '/images/pipeNorth.png'
-    pipeSouth.src = '/images/pipeSouth.png'
-
-    const scor = new Audio()
-
-    fly.src = 'sounds/fly.mp3'
-    scor.src = 'sounds/score.mp3'
-
-    let gap = 85
-    let constant
-
-    let bX = 10
-
-    let gravity = 1.5
-
-    let score = 0
-
-    var pipe = []
+  const init = node => {
+    let ctx = node.getContext('2d')
 
     pipe[0] = {
-      x: cvs?.width,
+      x: node.width,
       y: 0,
     }
 
@@ -54,59 +45,48 @@
 
         if (pipe[i].x == 125) {
           pipe.push({
-            x: cvs.width,
-            y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth?.height,
+            x: node.width,
+            y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height,
           })
         }
 
         // detect collision
-
-        if (
+        const collision =
           (bX + bird.width >= pipe[i].x &&
             bX <= pipe[i].x + pipeNorth.width &&
             (bY <= pipe[i].y + pipeNorth.height || bY + bird.height >= pipe[i].y + constant)) ||
-          bY + bird.height >= cvs.height - fg.height
-        ) {
-          location.reload()
-        }
+          bY + bird.height >= node.height - fg.height
+
+        collision && location.reload()
 
         if (pipe[i].x == 5) {
           score++
-          scor.play()
+          scoreAudio.play()
         }
       }
 
-      ctx.drawImage(fg, 0, cvs.height - fg.height)
+      ctx.drawImage(fg, 0, node.height - fg.height)
 
       ctx.drawImage(bird, bX, bY)
 
       bY += gravity
 
       ctx.fillStyle = '#000'
-      ctx.font = '20px Verdana'
-      ctx.fillText('Score : ' + score, 10, cvs.height - 20)
+      ctx.font = '20px Monospace'
+      ctx.fillText('Score : ' + score, 10, node.height - 20)
 
       requestAnimationFrame(draw)
     }
 
     draw()
-  })
+  }
 
   const handleKeydown = e => {
     bY -= 25
-    fly.play()
+    flyAudio.play()
   }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
-<canvas bind:this={cvs} id="canvas" width="288" height="512" />
-
-<style>
-  :global(body) {
-    height: 100vh;
-  }
-  canvas {
-    border: 1px solid red;
-  }
-</style>
+<canvas use:init width="288" height="512" />
