@@ -94,7 +94,7 @@
 
   const handleKeydown = e => {
     bY -= 25
-    fly.play()
+    // fly.play()
   }
 </script>
 
