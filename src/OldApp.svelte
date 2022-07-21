@@ -15,11 +15,11 @@
     const pipeNorth = new Image()
     const pipeSouth = new Image()
 
-    bird.src = '/images/bird.png'
-    bg.src = '/images/bg.png'
-    fg.src = '/images/fg.png'
-    pipeNorth.src = '/images/pipeNorth.png'
-    pipeSouth.src = '/images/pipeSouth.png'
+    bird.src = 'https://mehder.com/flappybird/images/bird.png'
+    bg.src = 'https://mehder.com/flappybird/images/bg.png'
+    fg.src = 'https://mehder.com/flappybird/images/fg.png'
+    pipeNorth.src = 'https://mehder.com/flappybird/images/pipeNorth.png'
+    pipeSouth.src = 'https://mehder.com/flappybird/images/pipeSouth.png'
 
     const scor = new Audio()
 
