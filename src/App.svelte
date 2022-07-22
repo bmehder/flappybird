@@ -11,6 +11,8 @@
   const pipes = []
   const GRAVITY = 1.5
   const GAP = 85
+  const PAST_PIPE_PIXEL_THRESHOLD = 5
+  const READY_FOR_NEW_PIPE_THRESHOLD = 125
 
   bird.src = '/images/bird.png'
   background.src = '/images/bg.png'
@@ -25,6 +27,67 @@
   let birdY = 150
   let score = 0
 
+  // PREDICATES
+  const isBirdPastPipe = pipe => pipe.x === PAST_PIPE_PIXEL_THRESHOLD
+
+  const isReadyForNewPipe = pipe => pipe.x === READY_FOR_NEW_PIPE_THRESHOLD
+
+  const isRightOfBirdTouchingLeftOfTopPipe = pipe => birdX + bird.width >= pipe.x
+
+  const isLeftOfBirdTouchingBottomOfTopPipe = pipe => birdX <= pipe.x + pipeNorth.width
+
+  const isTopOfBirdTouchingBottomOfTopPipe = pipe => birdY <= pipe.y + pipeNorth.height
+
+  const isBottomOfBirdTouchingTopOfBottomPipe = (pipe, yOffset) =>
+    birdY + bird.height >= pipe.y + yOffset
+
+  const isFloorCollision = node => birdY + bird.height >= node.height - foreground.height
+
+  const isPipeCollision = (pipe, yOffset) =>
+    isRightOfBirdTouchingLeftOfTopPipe(pipe) &&
+    isLeftOfBirdTouchingBottomOfTopPipe(pipe) &&
+    (isTopOfBirdTouchingBottomOfTopPipe(pipe) ||
+      isBottomOfBirdTouchingTopOfBottomPipe(pipe, yOffset))
+
+  // DRAW FUNCTIONS
+  const drawBackground = ctx => ctx.drawImage(background, 0, 0)
+
+  const drawForeground = (ctx, node) =>
+    ctx.drawImage(foreground, 0, node.height - foreground.height)
+
+  const drawBird = ctx => ctx.drawImage(bird, birdX, birdY)
+
+  const drawPipeNorth = (pipe, ctx) => ctx.drawImage(pipeNorth, pipe.x, pipe.y)
+
+  const drawPipeSouth = (pipe, ctx, yOffset) => ctx.drawImage(pipeSouth, pipe.x, pipe.y + yOffset)
+
+  const moveBirdDown = () => (birdY += GRAVITY)
+
+  // OTHER FUNCTIONS
+  const startOver = () => window.location.reload()
+
+  const increaseScore = () => {
+    score++
+    scoreAudio.play()
+  }
+
+  const displayScore = (ctx, node) => {
+    ctx.fillStyle = '#000'
+    ctx.font = '20px Monospace'
+    ctx.fillText('Score : ' + score, 10, node.height - 20)
+  }
+
+  const makeNewPipe = node => {
+    pipes.push({
+      x: node.width,
+      y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height,
+    })
+  }
+
+  const getPipeOffset = () => pipeNorth.height + GAP
+
+  const movePipeLeft = pipe => pipe.x--
+
   const init = node => {
     const ctx = node.getContext('2d')
 
@@ -34,67 +97,29 @@
     }
 
     const draw = () => {
-      const yOffset = pipeNorth.height + GAP
-      const drawBackground = () => ctx.drawImage(background, 0, 0)
-      const drawForeground = () => ctx.drawImage(foreground, 0, node.height - foreground.height)
-      const drawBird = () => ctx.drawImage(bird, birdX, birdY)
-      const startOver = () => window.location.reload()
-      const moveBirdDown = () => (birdY += GRAVITY)
-      const displayScore = () => {
-        ctx.fillStyle = '#000'
-        ctx.font = '20px Monospace'
-        ctx.fillText('Score : ' + score, 10, node.height - 20)
-      }
-      const increaseScore = () => {
-        score++
-        scoreAudio.play()
-      }
-      const makeNewPipe = () => {
-        pipes.push({
-          x: node.width,
-          y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height,
-        })
-      }
+      const yOffset = getPipeOffset()
 
-      drawBackground()
+      drawBackground(ctx)
 
-      for (let i = 0; i < pipes.length; i++) {
-        console.log(node.height - foreground.height)
-        const isBirdPastPipe = pipes[i].x === 5
-        const isReadyForNewPipe = pipes[i].x === 125
+      pipes.forEach(pipe => {
+        drawPipeNorth(pipe, ctx)
+        drawPipeSouth(pipe, ctx, yOffset)
+        movePipeLeft(pipe)
 
-        const isRightOfBirdTouchingLeftOfTopPipe = birdX + bird.width >= pipes[i].x
-        const isLeftOfBirdTouchingBottomOfTopPipe = birdX <= pipes[i].x + pipeNorth.width
-        const isTopOfBirdTouchingBottomOfTopPipe = birdY <= pipes[i].y + pipeNorth.height
-        const isBottomOfBirdTouchingTopOfBottomPipe = birdY + bird.height >= pipes[i].y + yOffset
-        // const isFloorCollision = (birdY + bird.height) >= (394)
-        const isFloorCollision = birdY + bird.height >= node.height - foreground.height
-        const isPipeCollision =
-          isRightOfBirdTouchingLeftOfTopPipe &&
-          isLeftOfBirdTouchingBottomOfTopPipe &&
-          (isTopOfBirdTouchingBottomOfTopPipe || isBottomOfBirdTouchingTopOfBottomPipe)
+        isReadyForNewPipe(pipe) && makeNewPipe(node)
 
-        const drawPipeNorth = () => ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y)
-        const drawPipeSouth = () => ctx.drawImage(pipeSouth, pipes[i].x, pipes[i].y + yOffset)
-
-        const movePipeLeft = () => pipes[i].x--
-
-        drawPipeNorth()
-        drawPipeSouth()
-        movePipeLeft()
-
-        isReadyForNewPipe && makeNewPipe()
-        if (isPipeCollision || isFloorCollision) {
+        if (isPipeCollision(pipe, yOffset) || isFloorCollision(node)) {
           startOver()
           return
         }
-        isBirdPastPipe && increaseScore()
-      }
 
-      drawForeground()
-      drawBird()
+        isBirdPastPipe(pipe) && increaseScore()
+      })
+
+      drawForeground(ctx, node)
+      drawBird(ctx)
       moveBirdDown()
-      displayScore()
+      displayScore(ctx, node)
 
       requestAnimationFrame(draw)
     }
