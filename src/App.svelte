@@ -47,7 +47,7 @@
       }
       const increaseScore = () => {
         score++
-        // scoreAudio.play()
+        scoreAudio.play()
       }
       const makeNewPipe = () => {
         pipes.push({
@@ -104,8 +104,7 @@
     draw()
   }
 
-  // const handleKeydown = e => (birdY -= 25) && flyAudio.play()
-  const handleKeydown = e => (birdY -= 25)
+  const handleKeydown = e => (birdY -= 25) && flyAudio.play()
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
