@@ -38,7 +38,7 @@
       const drawBackground = () => ctx.drawImage(background, 0, 0)
       const drawForeground = () => ctx.drawImage(foreground, 0, node.height - foreground.height)
       const drawBird = () => ctx.drawImage(bird, birdX, birdY)
-      const startOver = () => location.reload()
+      const startOver = () => window.location.reload()
       const moveBirdDown = () => (birdY += GRAVITY)
       const displayScore = () => {
         ctx.fillStyle = '#000'
@@ -89,10 +89,10 @@
         movePipeLeft()
 
         isReadyForNewPipe && makeNewPipe()
-        // if (isPipeCollision || isFloorCollision) {
-        //   startOver()
-        // }
-        isFloorCollision && alert('floor')
+        if (isPipeCollision || isFloorCollision) {
+          startOver()
+          return
+        }
         isBirdPastPipe && increaseScore()
       }
 
