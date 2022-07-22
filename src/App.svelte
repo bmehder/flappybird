@@ -63,17 +63,12 @@
         const isBirdPastPipe = pipes[i].x === 5
         const isReadyForNewPipe = pipes[i].x === 125
 
-        // prettier-ignore
-        const isRightOfBirdTouchingLeftOfTopPipe = (birdX + bird.width) >= pipes[i].x
-        // prettier-ignore
-        const isLeftOfBirdTouchingBottomOfTopPipe = birdX <= (pipes[i].x + pipeNorth.width)
-        // prettier-ignore
-        const isTopOfBirdTouchingBottomOfTopPipe = birdY <= (pipes[i].y + pipeNorth.height)
-        // prettier-ignore
-        const isBottomOfBirdTouchingTopOfBottomPipe = (birdY + bird.height) >= (pipes[i].y + yOffset)
-        // prettier-ignore
-        // const isFloorCollision = (birdY + bird.height) >= (node.height - foreground.height)
-        const isFloorCollision = (birdY + bird.height) >= (394)
+        const isRightOfBirdTouchingLeftOfTopPipe = birdX + bird.width >= pipes[i].x
+        const isLeftOfBirdTouchingBottomOfTopPipe = birdX <= pipes[i].x + pipeNorth.width
+        const isTopOfBirdTouchingBottomOfTopPipe = birdY <= pipes[i].y + pipeNorth.height
+        const isBottomOfBirdTouchingTopOfBottomPipe = birdY + bird.height >= pipes[i].y + yOffset
+        // const isFloorCollision = (birdY + bird.height) >= (394)
+        const isFloorCollision = birdY + bird.height >= node.height - foreground.height
         const isPipeCollision =
           isRightOfBirdTouchingLeftOfTopPipe &&
           isLeftOfBirdTouchingBottomOfTopPipe &&
