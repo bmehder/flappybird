@@ -25,25 +25,26 @@
   let birdY = 150
   let score = 0
 
-  const isBirdPastPipe = i => pipes[i].x === 5
-  const isReadyForNewPipe = i => pipes[i].x === 125
+  const isBirdPastPipe = pipe => pipe.x === 5
+  const isReadyForNewPipe = pipe => pipe.x === 125
 
-  const isRightOfBirdTouchingLeftOfTopPipe = i => birdX + bird.width >= pipes[i].x
-  const isLeftOfBirdTouchingBottomOfTopPipe = i => birdX <= pipes[i].x + pipeNorth.width
-  const isTopOfBirdTouchingBottomOfTopPipe = i => birdY <= pipes[i].y + pipeNorth.height
-  const isBottomOfBirdTouchingTopOfBottomPipe = (i, yOffset) =>
-    birdY + bird.height >= pipes[i].y + yOffset
+  const isRightOfBirdTouchingLeftOfTopPipe = pipe => birdX + bird.width >= pipe.x
+  const isLeftOfBirdTouchingBottomOfTopPipe = pipe => birdX <= pipe.x + pipeNorth.width
+  const isTopOfBirdTouchingBottomOfTopPipe = pipe => birdY <= pipe.y + pipeNorth.height
+  const isBottomOfBirdTouchingTopOfBottomPipe = (pipe, yOffset) =>
+    birdY + bird.height >= pipe.y + yOffset
+
   const isFloorCollision = node => birdY + bird.height >= node.height - foreground.height
-  const isPipeCollision = (i, yOffset) =>
-    isRightOfBirdTouchingLeftOfTopPipe(i) &&
-    isLeftOfBirdTouchingBottomOfTopPipe(i) &&
-    (isTopOfBirdTouchingBottomOfTopPipe(i) || isBottomOfBirdTouchingTopOfBottomPipe(i, yOffset))
+  const isPipeCollision = (pipe, yOffset) =>
+    isRightOfBirdTouchingLeftOfTopPipe(pipe) &&
+    isLeftOfBirdTouchingBottomOfTopPipe(pipe) &&
+    (isTopOfBirdTouchingBottomOfTopPipe(pipe) ||
+      isBottomOfBirdTouchingTopOfBottomPipe(pipe, yOffset))
 
-  const drawPipeNorth = (ctx, i) => ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y)
-  const drawPipeSouth = (ctx, i, yOffset) =>
-    ctx.drawImage(pipeSouth, pipes[i].x, pipes[i].y + yOffset)
+  const drawPipeNorth = (ctx, pipe) => ctx.drawImage(pipeNorth, pipe.x, pipe.y)
+  const drawPipeSouth = (ctx, pipe, yOffset) => ctx.drawImage(pipeSouth, pipe.x, pipe.y + yOffset)
 
-  const movePipeLeft = i => pipes[i].x--
+  const movePipeLeft = pipe => pipe.x--
 
   const init = node => {
     const ctx = node.getContext('2d')
@@ -78,36 +79,31 @@
 
       drawBackground()
 
-      for (let i = 0; i < pipes.length; i++) {
-        // const isBirdPastPipe = pipes[i].x === 5
-        // const isReadyForNewPipe = pipes[i].x === 125
+      pipes.forEach(pipe => {
+        drawPipeNorth(ctx, pipe)
+        drawPipeSouth(ctx, pipe, yOffset)
+        movePipeLeft(pipe)
 
-        // const isRightOfBirdTouchingLeftOfTopPipe = birdX + bird.width >= pipes[i].x
-        // const isLeftOfBirdTouchingBottomOfTopPipe = birdX <= pipes[i].x + pipeNorth.width
-        // const isTopOfBirdTouchingBottomOfTopPipe = birdY <= pipes[i].y + pipeNorth.height
-        // const isBottomOfBirdTouchingTopOfBottomPipe = birdY + bird.height >= pipes[i].y + yOffset
-        // const isFloorCollision = birdY + bird.height >= node.height - foreground.height
-        // const isPipeCollision =
-        //   isRightOfBirdTouchingLeftOfTopPipe &&
-        //   isLeftOfBirdTouchingBottomOfTopPipe &&
-        //   (isTopOfBirdTouchingBottomOfTopPipe || isBottomOfBirdTouchingTopOfBottomPipe)
-
-        // const drawPipeNorth = () => ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y)
-        // const drawPipeSouth = () => ctx.drawImage(pipeSouth, pipes[i].x, pipes[i].y + yOffset)
-
-        // const movePipeLeft = () => pipes[i].x--
-
-        drawPipeNorth(ctx, i)
-        drawPipeSouth(ctx, i, yOffset)
-        movePipeLeft(i)
-
-        isReadyForNewPipe(i) && makeNewPipe()
-        if (isPipeCollision(i, yOffset) || isFloorCollision(node)) {
+        isReadyForNewPipe(pipe) && makeNewPipe()
+        if (isPipeCollision(pipe, yOffset) || isFloorCollision(node)) {
           startOver()
           return
         }
-        isBirdPastPipe(i) && increaseScore()
-      }
+        isBirdPastPipe(pipe) && increaseScore()
+      })
+
+      // for (let i = 0; i < pipes.length; i++) {
+      //   drawPipeNorth(ctx, i)
+      //   drawPipeSouth(ctx, i, yOffset)
+      //   movePipeLeft(i)
+
+      //   isReadyForNewPipe(i) && makeNewPipe()
+      //   if (isPipeCollision(i, yOffset) || isFloorCollision(node)) {
+      //     startOver()
+      //     return
+      //   }
+      //   isBirdPastPipe(i) && increaseScore()
+      // }
 
       drawForeground()
       drawBird()
