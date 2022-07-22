@@ -52,13 +52,6 @@
     )
   }
 
-  const drawPipeNorth = (ctx, i) => ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y)
-
-  const drawPipeSouth = (ctx, i, yOffset) =>
-    ctx.drawImage(pipeSouth, pipes[i].x, pipes[i].y + yOffset)
-
-  const movePipeLeft = i => pipes[i].x--
-
   const init = node => {
     const ctx = node.getContext('2d')
 
@@ -72,6 +65,10 @@
       const drawBackground = () => ctx.drawImage(background, 0, 0)
       const drawForeground = () => ctx.drawImage(foreground, 0, node.height - foreground.height)
       const drawBird = () => ctx.drawImage(bird, birdX, birdY)
+      const drawPipeNorth = (ctx, i) => ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y)
+      const drawPipeSouth = (ctx, i, yOffset) =>
+        ctx.drawImage(pipeSouth, pipes[i].x, pipes[i].y + yOffset)
+      const movePipeLeft = i => pipes[i].x--
       const moveBirdDown = () => (birdY += GRAVITY)
       const increaseScore = () => {
         score++
