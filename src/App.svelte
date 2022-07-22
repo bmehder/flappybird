@@ -25,26 +25,25 @@
   let birdY = 150
   let score = 0
 
-  const isBirdPastPipe = pipe => pipe.x === 5
-  const isReadyForNewPipe = pipe => pipe.x === 125
+  const isBirdPastPipe = i => pipes[i].x === 5
+  const isReadyForNewPipe = i => pipes[i].x === 125
 
-  const isRightOfBirdTouchingLeftOfTopPipe = pipe => birdX + bird.width >= pipe.x
-  const isLeftOfBirdTouchingBottomOfTopPipe = pipe => birdX <= pipe.x + pipeNorth.width
-  const isTopOfBirdTouchingBottomOfTopPipe = pipe => birdY <= pipe.y + pipeNorth.height
-  const isBottomOfBirdTouchingTopOfBottomPipe = (pipe, yOffset) =>
-    birdY + bird.height >= pipe.y + yOffset
-
+  const isRightOfBirdTouchingLeftOfTopPipe = i => birdX + bird.width >= pipes[i].x
+  const isLeftOfBirdTouchingBottomOfTopPipe = i => birdX <= pipes[i].x + pipeNorth.width
+  const isTopOfBirdTouchingBottomOfTopPipe = i => birdY <= pipes[i].y + pipeNorth.height
+  const isBottomOfBirdTouchingTopOfBottomPipe = (i, yOffset) =>
+    birdY + bird.height >= pipes[i].y + yOffset
   const isFloorCollision = node => birdY + bird.height >= node.height - foreground.height
-  const isPipeCollision = (pipe, yOffset) =>
-    isRightOfBirdTouchingLeftOfTopPipe(pipe) &&
-    isLeftOfBirdTouchingBottomOfTopPipe(pipe) &&
-    (isTopOfBirdTouchingBottomOfTopPipe(pipe) ||
-      isBottomOfBirdTouchingTopOfBottomPipe(pipe, yOffset))
+  const isPipeCollision = (i, yOffset) =>
+    isRightOfBirdTouchingLeftOfTopPipe(i) &&
+    isLeftOfBirdTouchingBottomOfTopPipe(i) &&
+    (isTopOfBirdTouchingBottomOfTopPipe(i) || isBottomOfBirdTouchingTopOfBottomPipe(i, yOffset))
 
-  const drawPipeNorth = (ctx, pipe) => ctx.drawImage(pipeNorth, pipe.x, pipe.y)
-  const drawPipeSouth = (ctx, pipe, yOffset) => ctx.drawImage(pipeSouth, pipe.x, pipe.y + yOffset)
+  const drawPipeNorth = (ctx, i) => ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y)
+  const drawPipeSouth = (ctx, i, yOffset) =>
+    ctx.drawImage(pipeSouth, pipes[i].x, pipes[i].y + yOffset)
 
-  const movePipeLeft = pipe => pipe.x--
+  const movePipeLeft = i => pipes[i].x--
 
   const init = node => {
     const ctx = node.getContext('2d')
@@ -79,31 +78,18 @@
 
       drawBackground()
 
-      pipes.forEach(pipe => {
-        drawPipeNorth(ctx, pipe)
-        drawPipeSouth(ctx, pipe, yOffset)
-        movePipeLeft(pipe)
+      for (let i = 0; i < pipes.length; i++) {
+        drawPipeNorth(ctx, i)
+        drawPipeSouth(ctx, i, yOffset)
+        movePipeLeft(i)
 
-        isReadyForNewPipe(pipe) && makeNewPipe()
-        if (isPipeCollision(pipe, yOffset) || isFloorCollision(node)) {
+        isReadyForNewPipe(i) && makeNewPipe()
+        if (isPipeCollision(i, yOffset) || isFloorCollision(node)) {
           startOver()
           return
         }
-        isBirdPastPipe(pipe) && increaseScore()
-      })
-
-      // for (let i = 0; i < pipes.length; i++) {
-      //   drawPipeNorth(ctx, i)
-      //   drawPipeSouth(ctx, i, yOffset)
-      //   movePipeLeft(i)
-
-      //   isReadyForNewPipe(i) && makeNewPipe()
-      //   if (isPipeCollision(i, yOffset) || isFloorCollision(node)) {
-      //     startOver()
-      //     return
-      //   }
-      //   isBirdPastPipe(i) && increaseScore()
-      // }
+        isBirdPastPipe(i) && increaseScore()
+      }
 
       drawForeground()
       drawBird()
