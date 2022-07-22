@@ -13,6 +13,7 @@
   const GAP = 85
   const PAST_PIPE_THRESHOLD = 5
   const READY_FOR_NEW_PIPE_THRESHOLD = 125
+  const BIRD_FLY_OFFSET = 25
 
   bird.src = '/images/bird.png'
   background.src = '/images/bg.png'
@@ -32,21 +33,22 @@
 
   const isReadyForNewPipe = i => pipes[i].x === READY_FOR_NEW_PIPE_THRESHOLD
 
-  const isRightOfBirdTouchingLeftOfTopPipe = i => birdX + bird.width >= pipes[i].x
-
-  const isLeftOfBirdTouchingBottomOfTopPipe = i => birdX <= pipes[i].x + pipeNorth.width
-
-  const isTopOfBirdTouchingBottomOfTopPipe = i => birdY <= pipes[i].y + pipeNorth.height
-
-  const isBottomOfBirdTouchingTopOfBottomPipe = (i, yOffset) =>
-    birdY + bird.height >= pipes[i].y + yOffset
-
   const isFloorCollision = node => birdY + bird.height >= node.height - foreground.height
 
-  const isPipeCollision = (i, yOffset) =>
+  const isPipeCollision = (i, yOffset) => {
+    const isRightOfBirdTouchingLeftOfTopPipe = i => birdX + bird.width >= pipes[i].x
+
+    const isLeftOfBirdTouchingBottomOfTopPipe = i => birdX <= pipes[i].x + pipeNorth.width
+
+    const isTopOfBirdTouchingBottomOfTopPipe = i => birdY <= pipes[i].y + pipeNorth.height
+
+    const isBottomOfBirdTouchingTopOfBottomPipe = (i, yOffset) =>
+      birdY + bird.height >= pipes[i].y + yOffset
+
     isRightOfBirdTouchingLeftOfTopPipe(i) &&
-    isLeftOfBirdTouchingBottomOfTopPipe(i) &&
-    (isTopOfBirdTouchingBottomOfTopPipe(i) || isBottomOfBirdTouchingTopOfBottomPipe(i, yOffset))
+      isLeftOfBirdTouchingBottomOfTopPipe(i) &&
+      (isTopOfBirdTouchingBottomOfTopPipe(i) || isBottomOfBirdTouchingTopOfBottomPipe(i, yOffset))
+  }
 
   const drawPipeNorth = (ctx, i) => ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y)
 
@@ -86,9 +88,9 @@
       }
       const startOver = () => window.location.reload()
 
-      drawBackground()
-
       const yOffset = getYOffeset()
+
+      drawBackground()
 
       for (let i = 0; i < pipes.length; i++) {
         drawPipeNorth(ctx, i)
@@ -115,7 +117,7 @@
     draw()
   }
 
-  const handleKeydown = e => (birdY -= 25) && flyAudio.play()
+  const handleKeydown = e => (birdY -= BIRD_FLY_OFFSET) && flyAudio.play()
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
