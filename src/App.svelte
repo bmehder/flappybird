@@ -45,9 +45,11 @@
     const isBottomOfBirdTouchingTopOfBottomPipe = (i, yOffset) =>
       birdY + bird.height >= pipes[i].y + yOffset
 
-    isRightOfBirdTouchingLeftOfTopPipe(i) &&
+    return (
+      isRightOfBirdTouchingLeftOfTopPipe(i) &&
       isLeftOfBirdTouchingBottomOfTopPipe(i) &&
       (isTopOfBirdTouchingBottomOfTopPipe(i) || isBottomOfBirdTouchingTopOfBottomPipe(i, yOffset))
+    )
   }
 
   const drawPipeNorth = (ctx, i) => ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y)
