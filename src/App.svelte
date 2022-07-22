@@ -89,9 +89,10 @@
         movePipeLeft()
 
         isReadyForNewPipe && makeNewPipe()
-        if (isPipeCollision || isFloorCollision) {
-          startOver()
-        }
+        // if (isPipeCollision || isFloorCollision) {
+        //   startOver()
+        // }
+        isFloorCollision && alert('floor')
         isBirdPastPipe && increaseScore()
       }
 
