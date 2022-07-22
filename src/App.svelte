@@ -99,7 +99,7 @@
 
         if (isPipeCollision(i, yOffset) || isFloorCollision(node)) {
           startOver()
-          return
+          // return
         }
 
         isBirdPastPipe(i) && increaseScore()
