@@ -59,6 +59,7 @@
       drawBackground()
 
       for (let i = 0; i < pipes.length; i++) {
+        console.log(node.height - foreground.height)
         const isBirdPastPipe = pipes[i].x === 5
         const isReadyForNewPipe = pipes[i].x === 125
 
