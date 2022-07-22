@@ -72,7 +72,8 @@
         // prettier-ignore
         const isBottomOfBirdTouchingTopOfBottomPipe = (birdY + bird.height) >= (pipes[i].y + yOffset)
         // prettier-ignore
-        const isFloorCollision = (birdY + bird.height) >= (node.height - foreground.height)
+        // const isFloorCollision = (birdY + bird.height) >= (node.height - foreground.height)
+        const isFloorCollision = (birdY + bird.height) >= (394)
         const isPipeCollision =
           isRightOfBirdTouchingLeftOfTopPipe &&
           isLeftOfBirdTouchingBottomOfTopPipe &&
