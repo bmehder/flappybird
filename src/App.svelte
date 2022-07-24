@@ -27,6 +27,7 @@
   let birdX = 10
   let birdY = 150
   let score = 0
+  let highScore = 0
 
   // Predicates
   const isBirdPastPipe = i => pipes[i].x === PAST_PIPE_THRESHOLD
@@ -38,7 +39,7 @@
   const isPipeCollision = (i, yOffset) => {
     const isRightOfBirdTouchingLeftOfTopPipe = i => birdX + bird.width >= pipes[i].x
 
-    const isLeftOfBirdTouchingBottomOfTopPipe = i => birdX <= pipes[i].x + pipeNorth.width
+    const isRightOfBirdTouchingBottomOfTopPipe = i => birdX <= pipes[i].x + pipeNorth.width
 
     const isTopOfBirdTouchingBottomOfTopPipe = i => birdY <= pipes[i].y + pipeNorth.height
 
@@ -47,12 +48,17 @@
 
     return (
       isRightOfBirdTouchingLeftOfTopPipe(i) &&
-      isLeftOfBirdTouchingBottomOfTopPipe(i) &&
+      isRightOfBirdTouchingBottomOfTopPipe(i) &&
       (isTopOfBirdTouchingBottomOfTopPipe(i) || isBottomOfBirdTouchingTopOfBottomPipe(i, yOffset))
     )
   }
 
   const init = node => {
+    if (localStorage.getItem('flappyHighScore')) {
+      highScore = localStorage.getItem('flappyHighScore')
+    } else {
+      highScore = 0
+    }
     const ctx = node.getContext('2d')
 
     pipes[0] = {
@@ -99,6 +105,10 @@
         isReadyForNewPipe(i) && makeNewPipe()
 
         if (isPipeCollision(i, yOffset) || isFloorCollision(node)) {
+          const previousScore = localStorage.getItem('flappyHighScore')
+          if (score > previousScore) {
+            localStorage.setItem('flappyHighScore', score)
+          }
           startOver()
           return
         }
@@ -116,9 +126,15 @@
     draw()
   }
 
-  const handleKeydown = e => (birdY -= BIRD_FLY_OFFSET) && flyAudio.play()
+  const handleKeydown = e => {
+    birdY -= BIRD_FLY_OFFSET
+    flyAudio.play()
+  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
+<p>High Score : {highScore}</p>
 <canvas use:init width="288" height="512" />
+
+<!-- TODO: Pause -->
