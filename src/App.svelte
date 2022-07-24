@@ -150,4 +150,10 @@
     min-height: 100vh;
     user-select: none;
   }
+  @media only screen and (max-width: 1024px) {
+    main,
+    canvas {
+      width: 100%;
+    }
+  }
 </style>
