@@ -149,6 +149,5 @@
     margin: auto;
     min-height: 100vh;
     user-select: none;
-    touch-action: manipulation;
   }
 </style>

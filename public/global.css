@@ -7,6 +7,7 @@ body {
 	position: relative;
 	font-family: monospace;
 	color: #444;
+	touch-action: manipulation;
 }
 
 img {
