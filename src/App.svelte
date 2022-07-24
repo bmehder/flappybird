@@ -28,7 +28,7 @@
   let birdY = 150
   let score = 0
   let highScore = 0
-  let isPaused = false
+  let isPlaying = true
 
   // Predicates
   const isBirdPastPipe = i => pipes[i].x === PAST_PIPE_THRESHOLD
@@ -101,7 +101,7 @@
       for (let i = 0; i < pipes.length; i++) {
         drawPipeNorth(ctx, i)
         drawPipeSouth(ctx, i, yOffset)
-        !isPaused && movePipeLeft(i)
+        isPlaying && movePipeLeft(i)
 
         isReadyForNewPipe(i) && makeNewPipe()
 
@@ -116,7 +116,7 @@
 
       drawForeground()
       drawBird()
-      !isPaused && moveBirdDown()
+      isPlaying && moveBirdDown()
       displayScore()
 
       requestAnimationFrame(draw)
@@ -125,7 +125,7 @@
   }
 
   const handleEvent = e => {
-    e.key === 'p' && (isPaused = !isPaused)
+    e.key === 'p' && (isPlaying = !isPlaying)
     birdY -= BIRD_FLY_OFFSET
     flyAudio.play()
   }
@@ -150,7 +150,7 @@
     min-height: 100vh;
     user-select: none;
   }
-  @media only screen and (max-width: 1024px) {
+  @media only screen and (max-width: 768px) {
     main,
     canvas {
       width: 100%;
