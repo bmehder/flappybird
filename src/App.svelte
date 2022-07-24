@@ -148,8 +148,7 @@
     width: max-content;
     margin: auto;
     min-height: 100vh;
-  }
-  main {
     user-select: none;
+    touch-action: manipulation;
   }
 </style>
