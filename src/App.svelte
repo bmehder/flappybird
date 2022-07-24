@@ -28,6 +28,7 @@
   let birdY = 150
   let score = 0
   let highScore = 0
+  let isPaused = false
 
   // Predicates
   const isBirdPastPipe = i => pipes[i].x === PAST_PIPE_THRESHOLD
@@ -53,13 +54,13 @@
     )
   }
 
+  // Temp function
+  const resetHighScore = () => localStorage.setItem('flappyHighScore', 0)
+
   const init = node => {
-    if (localStorage.getItem('flappyHighScore')) {
-      highScore = localStorage.getItem('flappyHighScore')
-    } else {
-      highScore = 0
-    }
     const ctx = node.getContext('2d')
+
+    highScore = localStorage.getItem('flappyHighScore') || 0
 
     pipes[0] = {
       x: node.width,
@@ -82,9 +83,12 @@
       }
       const displayScore = () => {
         ctx.fillStyle = '#000'
-        ctx.font = '20px Monospace'
+        ctx.font = '16px Monospace'
         ctx.fillText(`Score : ${score}`, 10, node.height - 20)
+        ctx.fillText(`High Score : ${highScore}`, 140, node.height - 20)
       }
+      const setHighScore = () => score > highScore && localStorage.setItem('flappyHighScore', score)
+
       const makeNewPipe = () => {
         pipes.push({
           x: node.width,
@@ -100,15 +104,12 @@
       for (let i = 0; i < pipes.length; i++) {
         drawPipeNorth(ctx, i)
         drawPipeSouth(ctx, i, yOffset)
-        movePipeLeft(i)
+        !isPaused && movePipeLeft(i)
 
         isReadyForNewPipe(i) && makeNewPipe()
 
         if (isPipeCollision(i, yOffset) || isFloorCollision(node)) {
-          const previousScore = localStorage.getItem('flappyHighScore')
-          if (score > previousScore) {
-            localStorage.setItem('flappyHighScore', score)
-          }
+          setHighScore()
           startOver()
           return
         }
@@ -118,7 +119,7 @@
 
       drawForeground()
       drawBird()
-      moveBirdDown()
+      !isPaused && moveBirdDown()
       displayScore()
 
       requestAnimationFrame(draw)
@@ -127,6 +128,8 @@
   }
 
   const handleKeydown = e => {
+    e.key === 'p' && (isPaused = !isPaused)
+    console.log(isPaused)
     birdY -= BIRD_FLY_OFFSET
     flyAudio.play()
   }
@@ -134,7 +137,20 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<p>High Score : {highScore}</p>
-<canvas use:init width="288" height="512" />
+<main>
+  <h1>Flappy Bird</h1>
+  <canvas use:init width="288" height="512" />
+</main>
 
-<!-- TODO: Pause -->
+<style>
+  main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: max-content;
+    margin: auto;
+    min-height: 100vh;
+  }
+</style>

@@ -3,3 +3,12 @@
 	margin: 0;
 	padding: 0;
 }
+body {
+	position: relative;
+	font-family: monospace;
+	color: #444;
+}
+
+img {
+	display: block;
+}
