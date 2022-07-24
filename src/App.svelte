@@ -131,7 +131,7 @@
   }
 </script>
 
-<svelte:window on:keydown={handleEvent} on:click={handleEvent} />
+<svelte:window on:keydown={handleEvent} on:click={handleEvent} on:touchstart={handleEvent} />
 
 <main>
   <h1>Flappy Bird</h1>
