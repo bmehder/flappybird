@@ -24,6 +24,7 @@
   flyAudio.src = 'sounds/fly.mp3'
   scoreAudio.src = 'sounds/score.mp3'
 
+  // App State
   let birdX = 10
   let birdY = 150
   let score = 0
@@ -40,7 +41,7 @@
   const isPipeCollision = (i, yOffset) => {
     const isRightOfBirdTouchingLeftOfTopPipe = i => birdX + bird.width >= pipes[i].x
 
-    const isRightOfBirdTouchingBottomOfTopPipe = i => birdX <= pipes[i].x + pipeNorth.width
+    const isLeftOfBirdTouchingRightOfTopPipe = i => birdX <= pipes[i].x + pipeNorth.width
 
     const isTopOfBirdTouchingBottomOfTopPipe = i => birdY <= pipes[i].y + pipeNorth.height
 
@@ -49,7 +50,7 @@
 
     return (
       isRightOfBirdTouchingLeftOfTopPipe(i) &&
-      isRightOfBirdTouchingBottomOfTopPipe(i) &&
+      isLeftOfBirdTouchingRightOfTopPipe(i) &&
       (isTopOfBirdTouchingBottomOfTopPipe(i) || isBottomOfBirdTouchingTopOfBottomPipe(i, yOffset))
     )
   }
@@ -101,6 +102,7 @@
       for (let i = 0; i < pipes.length; i++) {
         drawPipeNorth(ctx, i)
         drawPipeSouth(ctx, i, yOffset)
+
         isPlaying && movePipeLeft(i)
 
         isReadyForNewPipe(i) && makeNewPipe()
@@ -125,7 +127,10 @@
   }
 
   const handleEvent = e => {
-    e.key === 'p' && (isPlaying = !isPlaying)
+    if (e.key === 'p') {
+      isPlaying = !isPlaying
+      return
+    }
     birdY -= BIRD_FLY_OFFSET
     flyAudio.play()
   }
