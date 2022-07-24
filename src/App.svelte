@@ -54,9 +54,6 @@
     )
   }
 
-  // Temp function
-  const resetHighScore = () => localStorage.setItem('flappyHighScore', 0)
-
   const init = node => {
     const ctx = node.getContext('2d')
 
@@ -127,15 +124,14 @@
     draw()
   }
 
-  const handleKeydown = e => {
+  const handleEvent = e => {
     e.key === 'p' && (isPaused = !isPaused)
-    console.log(isPaused)
     birdY -= BIRD_FLY_OFFSET
     flyAudio.play()
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window on:keydown={handleEvent} on:click={handleEvent} />
 
 <main>
   <h1>Flappy Bird</h1>
@@ -152,5 +148,8 @@
     width: max-content;
     margin: auto;
     min-height: 100vh;
+  }
+  main {
+    user-select: none;
   }
 </style>
